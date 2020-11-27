@@ -4,6 +4,7 @@ import SimpleITK as sitk
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from decimal import Decimal, ROUND_HALF_UP
+import torch
 import re
 
 def croppingForNumpy(image_array, lower_crop_size, upper_crop_size):

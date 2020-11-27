@@ -15,8 +15,12 @@
         "fold3" : true
         },
 
-	"dataset_path" : "/sandisk/data/patch/Abdomen/with_pad/512-512-8-4/resampled/mask",
-	"model_savepath" : "/sandisk/data/modelweight/Abdomen/with_pad/512-512-8-4/resampled/mask",
+	"image_path_n" : "image_path_n",
+	"image_path_f" : "image_path_f",
+	"label_path" : "label_path",
+	"model_savepath" : "model_savepath",
+	"org_model" : "org_model",
+	"org_model_name" : "latest.pkl",
 	"train_lists" : {
         "fold1" : "10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29",
         "fold2" : "00 01 02 03 04 05 06 07 08 09 20 21 22 23 24 25 26 27 28 29",
@@ -32,11 +36,9 @@
         "fold2" : "10 11 12 13 14 15 16 17 18 19",
         "fold3" : "20 21 22 23 24 25 26 27 28 29"
     },
-    "module_name" : "UNet_with_pad",
-    "system_name" : "UNetSystem",
-    "checkpoint_name" : "BestAndLatestModelCheckpoint",
-	"log" : "$HOME/Desktop/data/log/Abdomen/with_pad/512-512-8-4/resampled/mask",
-	"in_channel" : 1, 
+	"log" : "log",
+	"in_channel_main" : 1, 
+	"in_channel_final" : 64, 
 	"num_class" : 14,
 	"learning_rate" : 0.001,
 	"batch_size" : 2,
@@ -48,17 +50,21 @@
 	"project_name" : "abdomen",
 	"experiment_name" : "with_pad-512-512-8-4-resampled",
 
-  "data_directory" : "$HOME/Desktop/data/Abdomen",
-  "model_name" : "latest.pkl",
-  "image_patch_width" : 8,
-  "label_patch_width" : 2,
+  "data_directory" : "data_directory",
+  "model_fmc_dir" : "model_fmc_dir",
+  "image_patch_size" : "132-132-116",
+  "label_patch_size" : "44-44-28",
+  "image_patch_size_fmc" : "48-48-32",
+  "label_patch_size_fmc" : "44-44-28",
+  "image_patch_width_fmc" : 8,
+  "label_patch_width_fmc" : 2,
   "plane_size" : "512-512",
-  "overlap" : 1,
   "image_name" : "imaging_resampled.nii.gz",
+  "model_name" : "latest.pkl",
+  "model_fmc_name" : "latest.pkl",
   "save_name" : "label.mha",
 
   "csv_savedir" : "/sandisk/data/result/Abdomen/with_pad/512-512-8-4/resampled/mask", 
   "class_label" : "backGound spleen  rightKidney  leftKidney gallbladder esophagus liver stomach aorta inferiorVenaCava portalVeinAndSplenicVein pancreas rightAdrenalGland leftAdrenalGland",
-  "true_name" : "segmentation_resampled.nii.gz",
-  "predict_name" : "label.mha" 
+  "true_name" : "segmentation_resampled.nii.gz"
 }
