@@ -1,180 +1,191 @@
 #!/bin/bash
 
-# Input 
-readonly INPUT_DIRECTORY="input"
-echo -n "Is json file name pipliner.json?[y/n]:"
+# input 
+readonly input_directory="input"
+echo -n "is json file name pipliner.json?[y/n]:"
 read which
 while [ ! $which = "y" -a ! $which = "n" ]
 do
- echo -n "Is json file name the same as this file name?[y/n]:"
+ echo -n "is json file name the same as this file name?[y/n]:"
  read which
 done
 
-# Specify json file path.
+# specify json file path.
 if [ $which = "y" ];then
- JSON_NAME="pipliner.json"
+ json_name="pipliner.json"
 else
- echo -n "JSON_FILE_NAME="
- read JSON_NAME
+ echo -n "json_file_name="
+ read json_name
 fi
 
-readonly JSON_FILE="${INPUT_DIRECTORY}/${JSON_NAME}"
+readonly json_file="${input_directory}/${json_name}"
 
 # run or not
-readonly RUN_TRAINING=$(cat ${JSON_FILE} | jq -r ".run_training")
-readonly RUN_SEGMENTATION=$(cat ${JSON_FILE} | jq -r ".run_segmentation")
-readonly RUN_CALUCULATION=$(cat ${JSON_FILE} | jq -r ".run_caluculation")
+readonly run_training=$(cat ${json_file} | jq -r ".run_training")
+readonly run_segmentation=$(cat ${json_file} | jq -r ".run_segmentation")
+readonly run_caluculation=$(cat ${json_file} | jq -r ".run_caluculation")
 
-# Training input
-readonly DATASET_PATH=$(eval echo $(cat ${JSON_FILE} | jq -r ".dataset_path"))
-dataset_path="${DATASET_PATH}/image"
-save_directory="${DATASET_PATH}/segmentation"
-
-readonly MODEL_SAVEPATH=$(eval echo $(cat ${JSON_FILE} | jq -r ".model_savepath"))
-readonly MODULE_NAME=$(cat ${JSON_FILE} | jq -r ".module_name")
-readonly SYSTEM_NAME=$(cat ${JSON_FILE} | jq -r ".system_name")
-readonly CHECKPOINT_NAME=$(cat ${JSON_FILE} | jq -r ".checkpoint_name")
-readonly LOG=$(eval echo $(cat ${JSON_FILE} | jq -r ".log"))
-readonly IN_CHANNEL=$(cat ${JSON_FILE} | jq -r ".in_channel")
-readonly NUM_CLASS=$(cat ${JSON_FILE} | jq -r ".num_class")
-readonly LEARNING_RATE=$(cat ${JSON_FILE} | jq -r ".learning_rate")
-readonly BATCH_SIZE=$(cat ${JSON_FILE} | jq -r ".batch_size")
-readonly NUM_WORKERS=$(cat ${JSON_FILE} | jq -r ".num_workers")
-readonly EPOCH=$(cat ${JSON_FILE} | jq -r ".epoch")
-readonly DROPOUT=$(cat ${JSON_FILE} | jq -r ".dropout")
-readonly GPU_IDS=$(cat ${JSON_FILE} | jq -r ".gpu_ids")
-readonly API_KEY=$(cat ${JSON_FILE} | jq -r ".api_key")
-readonly PROJECT_NAME=$(cat ${JSON_FILE} | jq -r ".project_name")
-readonly EXPERIMENT_NAME=$(cat ${JSON_FILE} | jq -r ".experiment_name")
+# training input
+readonly image_path_n=$(eval echo $(cat ${json_file} | jq -r ".image_path_n"))
+readonly image_path_f=$(eval echo $(cat ${json_file} | jq -r ".image_path_f"))
+readonly label_path=$(eval echo $(cat ${json_file} | jq -r ".label_path"))
+readonly model_savepath=$(eval echo $(cat ${json_file} | jq -r ".model_savepath"))
+readonly org_model=$(eval echo $(cat ${json_file} | jq -r ".org_model"))
+readonly log=$(eval echo $(cat ${json_file} | jq -r ".log"))
+readonly in_channel_main=$(cat ${json_file} | jq -r ".in_channel_main")
+readonly in_channel_final=$(cat ${json_file} | jq -r ".in_channel_final")
+readonly num_class=$(cat ${json_file} | jq -r ".num_class")
+readonly learning_rate=$(cat ${json_file} | jq -r ".learning_rate")
+readonly batch_size=$(cat ${json_file} | jq -r ".batch_size")
+readonly dropout=$(cat ${json_file} | jq -r ".dropout")
+readonly num_workers=$(cat ${json_file} | jq -r ".num_workers")
+readonly epoch=$(cat ${json_file} | jq -r ".epoch")
+readonly gpu_ids=$(cat ${json_file} | jq -r ".gpu_ids")
+readonly api_key=$(cat ${json_file} | jq -r ".api_key")
+readonly project_name=$(cat ${json_file} | jq -r ".project_name")
+readonly experiment_name=$(cat ${json_file} | jq -r ".experiment_name")
+readonly org_model_name=$(cat ${json_file} | jq -r ".org_model_name")
 
 # Segmentation input
-readonly DATA_DIRECTORY=$(eval echo $(cat ${JSON_FILE} | jq -r ".data_directory"))
-readonly MODEL_NAME=$(eval echo $(cat ${JSON_FILE} | jq -r ".model_name"))
+save_directory="${image_path_f}/segmentation"
+readonly data_directory=$(eval echo $(cat ${json_file} | jq -r ".data_directory"))
+readonly model_fmc_dir=$(eval echo $(cat ${json_file} | jq -r ".model_fmc_dir"))
+readonly image_patch_size=$(cat ${json_file} | jq -r ".image_patch_size")
+readonly label_patch_size=$(cat ${json_file} | jq -r ".label_patch_size")
+readonly image_patch_size_fmc=$(cat ${json_file} | jq -r ".image_patch_size_fmc")
+readonly label_patch_size_fmc=$(cat ${json_file} | jq -r ".label_patch_size_fmc")
+readonly image_patch_width_fmc=$(cat ${json_file} | jq -r ".image_patch_width_fmc")
+readonly label_patch_width_fmc=$(cat ${json_file} | jq -r ".label_patch_width_fmc")
+readonly plane_size=$(cat ${json_file} | jq -r ".plane_size")
+readonly image_name=$(cat ${json_file} | jq -r ".image_name")
+readonly save_name=$(cat ${json_file} | jq -r ".save_name")
+readonly model_name=$(cat ${json_file} | jq -r ".model_name")
+readonly model_fmc_name=$(cat ${json_file} | jq -r ".model_fmc_name")
 
-readonly IMAGE_PATCH_WIDTH=$(cat ${JSON_FILE} | jq -r ".image_patch_width")
-readonly LABEL_PATCH_WIDTH=$(cat ${JSON_FILE} | jq -r ".label_patch_width")
-readonly PLANE_SIZE=$(cat ${JSON_FILE} | jq -r ".plane_size")
-readonly OVERLAP=$(cat ${JSON_FILE} | jq -r ".overlap")
-readonly IMAGE_NAME=$(cat ${JSON_FILE} | jq -r ".image_name")
-readonly SAVE_NAME=$(cat ${JSON_FILE} | jq -r ".save_name")
+# Caluculate DICE input
+readonly csv_savedir=$(eval echo $(cat ${json_file} | jq -r ".csv_savedir"))
+readonly class_label=$(cat ${json_file} | jq -r ".class_label")
+readonly true_name=$(cat ${json_file} | jq -r ".true_name")
 
-# Caluculation input
-readonly CSV_SAVEDIR=$(eval echo $(cat ${JSON_FILE} | jq -r ".csv_savedir"))
-readonly CLASS_LABEL=$(cat ${JSON_FILE} | jq -r ".class_label")
-readonly TRUE_NAME=$(cat ${JSON_FILE} | jq -r ".true_name")
-readonly PREDICT_NAME=$(cat ${JSON_FILE} | jq -r ".predict_name")
-
-
-readonly TRAIN_LISTS=$(cat ${JSON_FILE} | jq -r ".train_lists")
-readonly VAL_LISTS=$(cat ${JSON_FILE} | jq -r ".val_lists")
-readonly TEST_LISTS=$(cat ${JSON_FILE} | jq -r ".test_lists")
-readonly KEYS=$(cat ${JSON_FILE} | jq -r ".train_lists | keys[]")
+readonly train_lists=$(cat ${json_file} | jq -r ".train_lists")
+readonly val_lists=$(cat ${json_file} | jq -r ".val_lists")
+readonly test_lists=$(cat ${json_file} | jq -r ".test_lists")
+readonly keys=$(cat ${json_file} | jq -r ".train_lists | keys[]")
 
 all_patients=""
-for key in ${KEYS[@]}
+for key in ${keys[@]}
 do 
  echo $key
- TRAIN_LIST=$(echo $TRAIN_LISTS | jq -r ".$key")
- VAL_LIST=$(echo $VAL_LISTS | jq -r ".$key")
- TEST_LIST=$(echo $TEST_LISTS | jq -r ".$key")
- test_list=(${TEST_LIST// / })
- model_savepath="${MODEL_SAVEPATH}/${key}"
- log="${LOG}/${key}"
- experiment_name="${EXPERIMENT_NAME}_${key}"
+ train_list=$(echo $train_lists | jq -r ".$key")
+ val_list=$(echo $val_lists | jq -r ".$key")
+ test_list=$(echo $test_lists | jq -r ".$key")
+ test_list=(${test_list// / })
+ image_path_ff="${image_path_f}/${key}"
+ model_save="${model_savepath}/${key}"
+ org_model_f="${org_model}/${key}/${org_model_name}"
+ l="${log}/${key}"
+ ex_name="${experiment_name}_${key}"
 
- run_training_fold=$(echo $RUN_TRAINING | jq -r ".$key")
- run_segmentation_fold=$(echo $RUN_SEGMENTATION | jq -r ".$key")
- run_caluculation_fold=$(echo $RUN_CALUCULATION | jq -r ".$key")
+ run_training_fold=$(echo $run_training | jq -r ".$key")
+ run_segmentation_fold=$(echo $run_segmentation | jq -r ".$key")
+ run_caluculation_fold=$(echo $run_caluculation | jq -r ".$key")
 
  if ${run_training_fold};then
-  echo "---------- Training ----------"
-  echo "Dataset_path:${dataset_path}"
-  echo "MODEL_SAVEPATH:${model_savepath}"
-  echo "TRAIN_LIST:${TRAIN_LIST}"
-  echo "VAL_LIST:${VAL_LIST}"
-  echo "MODULE_NAME:${MODULE_NAME}"
-  echo "SYSTEM_NAME:${SYSTEM_NAME}"
-  echo "CHECKPOINT_NAME:${CHECKPOINT_NAME}"
-  echo "LOG:${log}"
-  echo "IN_CHANNEL:${IN_CHANNEL}"
-  echo "NUM_CLASS:${NUM_CLASS}"
-  echo "LEARNING_RATE:${LEARNING_RATE}"
-  echo "BATCH_SIZE:${BATCH_SIZE}"
-  echo "NUM_WORKERS:${NUM_WORKERS}"
-  echo "EPOCH:${EPOCH}"
-  echo "DROPOUT:${DROPOUT}"
-  echo "GPU_IDS:${GPU_IDS}"
-  echo "API_KEY:${API_KEY}"
-  echo "PROJECT_NAME:${PROJECT_NAME}"
-  echo "EXPERIMENT_NAME:${experiment_name}"
+  echo "---------- training ----------"
+  echo "image_path_list:${image_path_n} ${image_path_ff}"
+  echo "label_path:${label_path}"
+  echo "model_save:${model_save}"
+  echo "org_model_f:${org_model_f}"
+  echo "train_list:${train_list}"
+  echo "val_list:${val_list}"
+  echo "log:${l}"
+  echo "in_channel_main:${in_channel_main}"
+  echo "in_channel_final:${in_channel_final}"
+  echo "num_class:${num_class}"
+  echo "learning_rate:${learning_rate}"
+  echo "batch_size:${batch_size}"
+  echo "num_workers:${num_workers}"
+  echo "epoch:${epoch}"
+  echo "dropout:${dropout}"
+  echo "gpu_ids:${gpu_ids}"
+  echo "api_key:${api_key}"
+  echo "project_name:${project_name}"
+  echo "ex_name:${ex_name}"
 
-  python3 train.py ${dataset_path} ${model_savepath} ${MODULE_NAME} ${SYSTEM_NAME} ${CHECKPOINT_NAME} --train_list ${TRAIN_LIST} --val_list ${VAL_LIST} --log ${log} --in_channel ${IN_CHANNEL} --num_class ${NUM_CLASS} --lr ${LEARNING_RATE} --batch_size ${BATCH_SIZE} --num_workers ${NUM_WORKERS} --epoch ${EPOCH} --gpu_ids ${GPU_IDS} --api_key ${API_KEY} --project_name ${PROJECT_NAME} --experiment_name ${experiment_name} --dropout ${DROPOUT}
+  #python3 train.py ${image_path_n} ${image_path_ff} ${label_path} ${model_save} --org_model ${org_model_f} --train_list ${train_list} --val_list ${val_list} --log ${l} --in_channel_main ${in_channel_main} --in_channel_final ${in_channel_final} --num_class ${num_class} --learning_rate ${learning_rate} --batch_size ${batch_size} --dropout ${dropout} --num_workers ${num_workers} --epoch ${epoch} --gpu_ids ${gpu_ids} --api_key ${api_key} --project_name ${project_name} --experiment_name ${ex_name}
 
   if [ $? -ne 0 ];then
    exit 1
   fi
 
  else
-  echo "---------- No training. ----------"
+  echo "---------- no training. ----------"
  fi
 
- model="${model_savepath}/${MODEL_NAME}"
- model_name=${model%.*}
- csv_name=${model_name////_}
+ model="${model_save}/${model_name}"
+ mn=${model%.*}
+ csv_name=${mn////_}
  if ${run_segmentation_fold};then
-  echo "---------- Segmentation ----------"
+  echo "---------- segmentation ----------"
   echo ${test_list[@]}
   for number in ${test_list[@]}
   do
-   image="${DATA_DIRECTORY}/case_${number}/${IMAGE_NAME}"
-   save="${save_directory}/case_${number}/${SAVE_NAME}"
+   image="${data_directory}/case_${number}/${image_name}"
+   save="${save_directory}/case_${number}/${save_name}"
+   model_fmc="${model_fmc_dir}/${key}/${model_fmc_name}"
 
-   echo "Image:${image}"
-   echo "Model:${model}"
-   echo "Save:${save}"
-   echo "IMAGE_PATCH_WIDTH:${IMAGE_PATCH_WIDTH}"
-   echo "LABEL_PATCH_WIDTH:${LABEL_PATCH_WIDTH}"
-   echo "PLANE_SIZE:${PLANE_SIZE}"
-   echo "OVERLAP:${OVERLAP}"
-   echo "GPU_IDS:${GPU_IDS}"
+   echo "image:${image}"
+   echo "model_fmc:${model_fmc}"
+   echo "model:${model}"
+   echo "save:${save}"
+   echo "image_patch_size:${image_patch_size}"
+   echo "label_patch_size:${label_patch_size}"
+   echo "image_patch_size:${image_patch_size_fmc}"
+   echo "label_patch_size:${label_patch_size_fmc}"
+   echo "image_patch_width_fmc:${image_patch_width_fmc}"
+   echo "label_patch_width_fmc:${label_patch_width_fmc}"
+   echo "plane_size:${plane_size}"
+   echo "gpu_ids:${gpu_ids}"
 
-   python3 segmentation.py $image $model $save --image_patch_width ${IMAGE_PATCH_WIDTH} --label_patch_width ${LABEL_PATCH_WIDTH} --plane_size ${PLANE_SIZE} --overlap ${OVERLAP} -g ${GPU_IDS}
+   #python3 segmentation.py ${image} ${model_fmc} ${model} ${save} --image_patch_size ${image_patch_size} --label_patch_size ${label_patch_size} --image_patch_size_fmc ${image_patch_size_fmc} --label_patch_size_fmc ${label_patch_size_fmc} --plane_size ${plane_size} -g ${gpu_ids}
+
 
    if [ $? -ne 0 ];then
     exit 1
    fi
 
+   if ${run_caluculation_fold};then
+    all_patients="${all_patients}${number} "
+   fi
+
   done
   
  else
-  echo "---------- No segmentation. ----------"
+  echo "---------- no segmentation. ----------"
  fi
 
- if ${run_caluculation_fold};then
-  all_patients="${all_patients}${TEST_LIST} "
- fi
 done
 
-echo "---------- Caluculation ----------"
-csv_savepath="${CSV_SAVEDIR}/${csv_name}.csv"
-echo "TRUE_DIRECTORY:${DATA_DIRECTORY}"
-echo "PREDICT_DIRECTORY:${save_directory}"
-echo "CSV_SAVEPATH:${csv_savepath}"
-echo "All_patients:${all_patients[@]}"
-echo "NUM_CLASS:${NUM_CLASS}"
-echo "CLASS_LABEL:${CLASS_LABEL}"
-echo "TRUE_NAME:${TRUE_NAME}"
-echo "PREDICT_NAME:${PREDICT_NAME}"
+echo "---------- caluculation ----------"
+csv_savepath="${csv_savedir}/${csv_name}.csv"
+echo "true_directory:${data_directory}"
+echo "predict_directory:${save_directory}"
+echo "csv_savepath:${csv_savepath}"
+echo "all_patients:${all_patients[@]}"
+echo "num_class:${num_class}"
+echo "class_label:${class_label}"
+echo "true_name:${true_name}"
+echo "predict_name:${save_name}"
 
 
-python3 caluculateDICE.py ${DATA_DIRECTORY} ${save_directory} ${csv_savepath} ${all_patients} --classes ${NUM_CLASS} --class_label ${CLASS_LABEL} --true_name ${TRUE_NAME} --predict_name ${PREDICT_NAME} 
+#python3 caluculatedice.py ${data_directory} ${save_directory} ${csv_savepath} ${all_patients} --classes ${num_class} --class_label ${class_label} --true_name ${true_name} --predict_name ${predict_name} 
 
 if [ $? -ne 0 ];then
  exit 1
 fi
 
-echo "---------- Logging ----------"
-python3 logger.py ${JSON_FILE}
-echo Done.
+echo "---------- logging ----------"
+#python3 logger.py ${json_file}
+echo done.
 
 
