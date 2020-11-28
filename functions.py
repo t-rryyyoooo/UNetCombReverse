@@ -5,6 +5,18 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from decimal import Decimal, ROUND_HALF_UP
 import re
+import requests
+from secret import token
+
+def sendToLineNotify(message):
+    line_notify_api = "https://notify-api.line.me/api/notify"
+    headers = {'Authorization': f'Bearer ' + token}
+    data = {"message" : message}
+    res = requests.post(line_notify_api, headers=headers, data=data)
+    if res.status_code == 200:
+        print("Suceeded in sending to Line Notify")
+    else:
+        pritn("Failed to send")
 
 def croppingForNumpy(image_array, lower_crop_size, upper_crop_size):
     assert image_array.ndim == len(lower_crop_size) == len(upper_crop_size)

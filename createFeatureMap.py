@@ -2,7 +2,7 @@ import argparse
 import SimpleITK as sitk
 import cloudpickle
 from featureMapCreater import FeatureMapCreater
-from functions import getSizeFromString
+from functions import getSizeFromString, sendToLineNotify
 
 def parseArgs():
     parser = argparse.ArgumentParser()
@@ -50,6 +50,9 @@ def main(args):
 
     fmc.execute()
     fmc.save(args.save_path)
+
+    message = args.save_path + " DONE."
+    sendToLineNotify(message)
 
 if __name__ == "__main__":
     args = parseArgs()
