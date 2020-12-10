@@ -6,15 +6,15 @@ import argparse
 from pathlib import Path
 import sys
 import cloudpickle
-from ..model.UNet_comb_reverse.modelCheckpoint import BestAndLatestModelCheckpoint as checkpoint
-from ..model.UNet_comb_reverse.system import UNetSystem
+from model.UNet_comb_reverse.modelCheckpoint import BestAndLatestModelCheckpoint as checkpoint
+from model.UNet_comb_reverse.system import UNetSystem
 
 def parseArgs():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("image_path_list", nargs=2)
     parser.add_argument("label_path")
-    passer.add_argument("model_savepath")
+    parser.add_argument("model_savepath")
     parser.add_argument("--org_model", help=".pkl")
     parser.add_argument("--train_list", help="00 01", nargs="*", default= "00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19")
     parser.add_argument("--val_list", help="20 21", nargs="*", default="20 21 22 23 24 25 26 27 28 29")
@@ -63,7 +63,7 @@ def main(args):
             num_class = args.num_class,
             learning_rate = args.learning_rate,
             batch_size = args.batch_size,
-            checkpoint = checkpoint(args.save_path),
+            checkpoint = checkpoint(args.model_savepath),
             num_workers = args.num_workers,
             transfer_org_model = org_model,
             dropout = args.dropout

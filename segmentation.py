@@ -16,10 +16,10 @@ def ParseArgs():
     parser.add_argument("modelweightfile_fmc", help=".pkl")
     parser.add_argument("modelweightfile", help="Trained model weights file (*.pkl).")
     parser.add_argument("save_path", help="Segmented label file.(.mha)")
-    parser_add_argument("--image_patch_size", default="132-132-116")
-    parser_add_argument("--label_patch_size", default="44-44-28")
-    parser_add_argument("--image_patch_size_fmc", default="48-48-32")
-    parser_add_argument("--label_patch_size_fmc", default="44-44-28")
+    parser.add_argument("--image_patch_size", default="132-132-116")
+    parser.add_argument("--label_patch_size", default="44-44-28")
+    parser.add_argument("--image_patch_size_fmc", default="48-48-32")
+    parser.add_argument("--label_patch_size_fmc", default="44-44-28")
     parser.add_argument("--image_patch_width_fmc", default=8, type=int)
     parser.add_argument("--label_patch_width_fmc", default=8, type=int)
     parser.add_argument("--plane_size", default="512-512")
@@ -32,7 +32,8 @@ def segment(image_array, image_array_final, model, device="cpu"):
     while image_array.ndim < 5:
         image_array = image_array[np.newaxis, ...]
 
-    assert image_array_final.ndim == 4
+    while image_array_final.ndim < 5:
+        image_array_final = image_array_final[np.newaxis, ...]
 
     image_array = torch.from_numpy(image_array).to(device, dtype=torch.float)
     image_array_final = torch.from_numpy(image_array_final).to(device, dtype=torch.float)
@@ -72,8 +73,8 @@ def main(args):
             model = model_fmc,
             image_patch_size = image_patch_size_fmc,
             label_patch_size = label_patch_size_fmc,
-            image_patch_width = args.image_patch_width,
-            label_patch_width = args.label_patch_width,
+            image_patch_width = args.image_patch_width_fmc,
+            label_patch_width = args.label_patch_width_fmc,
             plane_size = plane_size
             )
 
@@ -106,15 +107,18 @@ def main(args):
 
     """ Segmentation module. """
     segmented_array_list = []
-    with tqdm(total=len(image_array_list), desc="Segmenting images...", ncols=60):
+    with tqdm(total=len(image_array_list), desc="Segmenting images...", ncols=60) as pbar:
         for image_array, feature_map in zip(image_array_list, feature_map_list):
             segmented_array = segment(image_array, feature_map, model, device=device)
             segmented_array = np.argmax(segmented_array, axis=0).astype(np.uint8)
 
-        segmented_array_list.append(segmented_array)
+            segmented_array_list.append(segmented_array)
+
+            pbar.update(1)
+
 
     """ Restore module. """
-    segmented = tpc.restore(segmented_array_list)
+    segmented = extractor.restore(segmented_array_list)
 
     createParentPath(args.save_path)
     print("Saving image to {}".format(args.save_path))

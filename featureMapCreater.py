@@ -70,6 +70,7 @@ class FeatureMapCreater():
         tpc.execute()
         image_patch_array_list, _ = tpc.output(kind="Array")
 
+
         diff = self.image_patch_width - self.label_patch_width
         lower_crop_width = diff // 2
         upper_crop_width = (diff + 1) // 2
@@ -105,6 +106,8 @@ class FeatureMapCreater():
             e.execute()
 
             feature_map_list = e.output()[0]
+
+            del e
 
             """ Separete data per patch. """
             if i == 0:

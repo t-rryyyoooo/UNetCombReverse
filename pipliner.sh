@@ -112,7 +112,7 @@ do
   echo "project_name:${project_name}"
   echo "ex_name:${ex_name}"
 
-  #python3 train.py ${image_path_n} ${image_path_ff} ${label_path} ${model_save} --org_model ${org_model_f} --train_list ${train_list} --val_list ${val_list} --log ${l} --in_channel_main ${in_channel_main} --in_channel_final ${in_channel_final} --num_class ${num_class} --learning_rate ${learning_rate} --batch_size ${batch_size} --dropout ${dropout} --num_workers ${num_workers} --epoch ${epoch} --gpu_ids ${gpu_ids} --api_key ${api_key} --project_name ${project_name} --experiment_name ${ex_name}
+  python3 train.py ${image_path_n} ${image_path_ff} ${label_path} ${model_save} --org_model ${org_model_f} --train_list ${train_list} --val_list ${val_list} --log ${l} --in_channel_main ${in_channel_main} --in_channel_final ${in_channel_final} --num_class ${num_class} --learning_rate ${learning_rate} --batch_size ${batch_size} --dropout ${dropout} --num_workers ${num_workers} --epoch ${epoch} --gpu_ids ${gpu_ids} --api_key ${api_key} --project_name ${project_name} --experiment_name ${ex_name}
 
   if [ $? -ne 0 ];then
    exit 1
@@ -147,7 +147,7 @@ do
    echo "plane_size:${plane_size}"
    echo "gpu_ids:${gpu_ids}"
 
-   #python3 segmentation.py ${image} ${model_fmc} ${model} ${save} --image_patch_size ${image_patch_size} --label_patch_size ${label_patch_size} --image_patch_size_fmc ${image_patch_size_fmc} --label_patch_size_fmc ${label_patch_size_fmc} --plane_size ${plane_size} -g ${gpu_ids}
+   #python3 segmentation.py ${image} ${model_fmc} ${model} ${save} --image_patch_size ${image_patch_size} --label_patch_size ${label_patch_size} --image_patch_size_fmc ${image_patch_size_fmc} --label_patch_size_fmc ${label_patch_size_fmc} --plane_size ${plane_size} -g ${gpu_ids} --image_patch_width_fmc ${image_patch_width_fmc} --label_patch_width ${label_patch_width_fmc}
 
 
    if [ $? -ne 0 ];then
@@ -178,14 +178,14 @@ echo "true_name:${true_name}"
 echo "predict_name:${save_name}"
 
 
-#python3 caluculatedice.py ${data_directory} ${save_directory} ${csv_savepath} ${all_patients} --classes ${num_class} --class_label ${class_label} --true_name ${true_name} --predict_name ${predict_name} 
+python3 caluculateDICE.py ${data_directory} ${save_directory} ${csv_savepath} ${all_patients} --classes ${num_class} --class_label ${class_label} --true_name ${true_name} --predict_name ${save_name} 
 
 if [ $? -ne 0 ];then
  exit 1
 fi
 
 echo "---------- logging ----------"
-#python3 logger.py ${json_file}
+python3 logger.py ${json_file}
 echo done.
 
 
